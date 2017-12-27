@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -19,9 +19,17 @@ namespace ISISnake
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        SortedList<string, Texture2D> textures = new SortedList<string, Texture2D>();
+        Serpent serpent = new Serpent();
+
+        double elapsedTime = 0;
+
         public SnakeGame()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            IsMouseVisible = true;
             Content.RootDirectory = "Content";
         }
 
@@ -47,7 +55,14 @@ namespace ISISnake
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            textures.Add("SerpentTete",     Content.Load<Texture2D>("serpent_tete"));
+            textures.Add("SerpentCorps",    Content.Load<Texture2D>("serpent_corps"));
+            textures.Add("SerpentVirage",   Content.Load<Texture2D>("serpent_virage"));
+            textures.Add("SerpentQueue",    Content.Load<Texture2D>("serpent_queue"));
+
+            serpent.AddSprite(new Sprite(textures["SerpentTete"], new Vector2(75, 25)));
+            serpent.AddSprite(new Sprite(textures["SerpentCorps"], new Vector2(50, 25)));
+            serpent.AddSprite(new Sprite(textures["SerpentQueue"], new Vector2(25, 25)));
         }
 
         /// <summary>
@@ -70,7 +85,14 @@ namespace ISISnake
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+
+            if(elapsedTime >= 1)
+            {
+                serpent.Update(gameTime);
+                elapsedTime = 0;
+            }
+            
 
             base.Update(gameTime);
         }
@@ -81,9 +103,11 @@ namespace ISISnake
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            serpent.Draw(spriteBatch, gameTime);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
