@@ -23,6 +23,10 @@ namespace ISISnake
         Serpent serpent = new Serpent();
 
         double elapsedTime = 0;
+        const int INTERVALLE = 1;
+
+        KeyboardState keyboardState;
+        int orientation = 0;
 
         public SnakeGame()
         {
@@ -81,15 +85,33 @@ namespace ISISnake
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            keyboardState = Keyboard.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
             elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if(elapsedTime >= 1)
+            if (orientation != 2 && keyboardState.IsKeyDown(Keys.Right))
             {
-                serpent.Update(gameTime);
+                orientation = 0;
+            }
+            if (orientation != 3 && keyboardState.IsKeyDown(Keys.Down))
+            {
+                orientation = 1;
+            }
+            if (orientation != 0 && keyboardState.IsKeyDown(Keys.Left))
+            {
+                orientation = 2;
+            }
+            if (orientation != 1 && keyboardState.IsKeyDown(Keys.Up))
+            {
+                orientation = 3;
+            }
+
+            if (elapsedTime >= INTERVALLE)
+            {
+                serpent.Update(gameTime, orientation);
                 elapsedTime = 0;
             }
             
