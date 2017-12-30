@@ -23,7 +23,7 @@ namespace ISISnake
         Serpent serpent = new Serpent();
 
         double elapsedTime = 0;
-        const int INTERVALLE = 1;
+        const float INTERVALLE = 1.0f;
 
         KeyboardState keyboardState;
         int orientation = 0;
@@ -45,7 +45,9 @@ namespace ISISnake
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            serpent.AddSprite(new Sprite("SerpentTete", new Vector2(75, 25)));
+            serpent.AddSprite(new Sprite("SerpentCorps", new Vector2(50, 25)));
+            serpent.AddSprite(new Sprite("SerpentQueue", new Vector2(25, 25)));
 
             base.Initialize();
         }
@@ -63,10 +65,6 @@ namespace ISISnake
             textures.Add("SerpentCorps",    Content.Load<Texture2D>("serpent_corps"));
             textures.Add("SerpentVirage",   Content.Load<Texture2D>("serpent_virage"));
             textures.Add("SerpentQueue",    Content.Load<Texture2D>("serpent_queue"));
-
-            serpent.AddSprite(new Sprite(textures["SerpentTete"], new Vector2(75, 25)));
-            serpent.AddSprite(new Sprite(textures["SerpentCorps"], new Vector2(50, 25)));
-            serpent.AddSprite(new Sprite(textures["SerpentQueue"], new Vector2(25, 25)));
         }
 
         /// <summary>
@@ -128,7 +126,7 @@ namespace ISISnake
             GraphicsDevice.Clear(Color.White);
 
             spriteBatch.Begin();
-            serpent.Draw(spriteBatch, gameTime);
+            serpent.Draw(spriteBatch, gameTime, textures);
             spriteBatch.End();
 
             base.Draw(gameTime);

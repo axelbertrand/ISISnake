@@ -49,19 +49,64 @@ namespace ISISnake
 
             Vector2 nouvPosTete = corps[0].Position + direction;
 
-            for(int i = corps.Count - 1; i > 0; i--)
-            {
-                corps[i].Position = corps[i - 1].Position;
-            }
+            // Ajout d'une nouvelle tête
+            Sprite nouvTete = new Sprite("SerpentTete", corps[0].Position + direction);
+            nouvTete.Orientation = orientation * 90.0f;
+            corps.Insert(0, nouvTete);
 
-            corps[0].Position = nouvPosTete;
+            // Suppression de la queue
+            corps[corps.Count - 2].Orientation = corps[corps.Count - 3].Orientation;
+            corps[corps.Count - 2].TextureName = "SerpentQueue";
+            corps.RemoveAt(corps.Count - 1);
+
+            // Modification de la texture du corps
+            if (corps[0].Orientation == corps[2].Orientation)
+            {
+                corps[1].TextureName = "SerpentCorps";
+            }
+            else
+            {
+                corps[1].TextureName = "SerpentVirage";
+                /*
+                       *
+                       * *
+                */
+                if(corps[0].Orientation == 0 && corps[2].Orientation == 1 * 90.0f || corps[0].Orientation == 3 * 90.0f && corps[2].Orientation == 2 * 90.0f)
+                {
+                    corps[1].Orientation = 3 * 90.0f;
+                }
+                /*
+                       * *
+                       *
+                */
+                else if (corps[0].Orientation == 1 * 90.0f && corps[2].Orientation == 2 * 90.0f || corps[0].Orientation == 0 && corps[2].Orientation == 3 * 90.0f)
+                {
+                    corps[1].Orientation = 0 * 90.0f;
+                }
+                /*
+                       * *
+                         *
+                */
+                else if (corps[0].Orientation == 2 * 90.0f && corps[2].Orientation == 3 * 90.0f || corps[0].Orientation == 1 * 90.0f && corps[2].Orientation == 0)
+                {
+                    corps[1].Orientation = 1 * 90.0f;
+                }
+                /*
+                         *
+                       * *
+                */
+                else if (corps[0].Orientation == 3 * 90.0f && corps[2].Orientation == 0 || corps[0].Orientation == 2 * 90.0f && corps[2].Orientation == 1 * 90.0f)
+                {
+                    corps[1].Orientation = 2 * 90.0f;
+                }
+            }
         }
 
-        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime, SortedList<string, Texture2D> listeTexture)
         {
             foreach(Sprite sprite in corps)
             {
-                sprite.Draw(spriteBatch, gameTime);
+                sprite.Draw(spriteBatch, gameTime, listeTexture);
             }
         }
     }
