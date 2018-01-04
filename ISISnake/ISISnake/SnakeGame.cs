@@ -21,12 +21,14 @@ namespace ISISnake
 
         SortedList<string, Texture2D> textures = new SortedList<string, Texture2D>();
         Serpent serpent = new Serpent();
+        Sprite pomme;
 
         double elapsedTime = 0;
-        const float INTERVALLE = 1.0f;
+        const float INTERVALLE = 0.5f;
 
         KeyboardState keyboardState;
         int orientation = 0;
+        bool s = false;
 
         public SnakeGame()
         {
@@ -49,6 +51,9 @@ namespace ISISnake
             serpent.AddSprite(new Sprite("SerpentCorps", new Vector2(50, 25)));
             serpent.AddSprite(new Sprite("SerpentQueue", new Vector2(25, 25)));
 
+            Random rnd = new Random();
+            pomme = new Sprite("Pomme", new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f));
+
             base.Initialize();
         }
 
@@ -65,6 +70,7 @@ namespace ISISnake
             textures.Add("SerpentCorps",    Content.Load<Texture2D>("serpent_corps"));
             textures.Add("SerpentVirage",   Content.Load<Texture2D>("serpent_virage"));
             textures.Add("SerpentQueue",    Content.Load<Texture2D>("serpent_queue"));
+            textures.Add("Pomme",           Content.Load<Texture2D>("pomme"));
         }
 
         /// <summary>
@@ -90,27 +96,36 @@ namespace ISISnake
 
             elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (orientation != 2 && keyboardState.IsKeyDown(Keys.Right))
+            if(!s)
             {
-                orientation = 0;
+                if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
+                {
+                    orientation = 0;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
+                {
+                    orientation = 1;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
+                {
+                    orientation = 2;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
+                {
+                    orientation = 3;
+                    s = true;
+                }
             }
-            if (orientation != 3 && keyboardState.IsKeyDown(Keys.Down))
-            {
-                orientation = 1;
-            }
-            if (orientation != 0 && keyboardState.IsKeyDown(Keys.Left))
-            {
-                orientation = 2;
-            }
-            if (orientation != 1 && keyboardState.IsKeyDown(Keys.Up))
-            {
-                orientation = 3;
-            }
+            
 
             if (elapsedTime >= INTERVALLE)
             {
                 serpent.Update(gameTime, orientation);
                 elapsedTime = 0;
+                s = false;
             }
             
 
@@ -127,6 +142,7 @@ namespace ISISnake
 
             spriteBatch.Begin();
             serpent.Draw(spriteBatch, gameTime, textures);
+            pomme.Draw(spriteBatch, gameTime, textures);
             spriteBatch.End();
 
             base.Draw(gameTime);
