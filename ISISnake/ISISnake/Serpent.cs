@@ -9,14 +9,42 @@ namespace ISISnake
 {
     class Serpent
     {
-        public List<Sprite> corps = new List<Sprite>();
+        public List<Sprite> corps;
 
-        public void AddSprite(Sprite sprite)
+        public Serpent()
         {
-            corps.Add(sprite);
+            corps = new List<Sprite>();
+            corps.Add(new Sprite("SerpentTete", new Vector2(75, 25)));
+            corps.Add(new Sprite("SerpentCorps", new Vector2(50, 25)));
+            corps.Add(new Sprite("SerpentQueue", new Vector2(25, 25)));
         }
 
-        public Sprite GetSprite(int index)
+        public void Add()
+        {
+            Sprite queue = new Sprite("SerpentQueue", Vector2.Zero);
+            Sprite s = corps[corps.Count - 1];
+            switch(s.Orientation)
+            {
+                case 0 :
+                    queue.Position = s.Position + new Vector2(-25, 0);
+                    break;
+                case 1:
+                    queue.Position = s.Position + new Vector2(0, -25);
+                    break;
+                case 2:
+                    queue.Position = s.Position + new Vector2(25, 0);
+                    break;
+                case 3:
+                    queue.Position = s.Position + new Vector2(0, 25);
+                    break;
+            }
+            queue.Orientation = s.Orientation;
+            s.TextureName = "SerpentCorps";
+            corps.Add(queue);
+
+        }
+
+        public Sprite Get(int index)
         {
             return corps[index];
         }
@@ -51,7 +79,7 @@ namespace ISISnake
 
             // Ajout d'une nouvelle tête
             Sprite nouvTete = new Sprite("SerpentTete", corps[0].Position + direction);
-            nouvTete.Orientation = orientation * 90.0f;
+            nouvTete.Orientation = orientation;
             corps.Insert(0, nouvTete);
 
             // Suppression de la queue
@@ -71,33 +99,33 @@ namespace ISISnake
                        *
                        * *
                 */
-                if(corps[0].Orientation == 0 && corps[2].Orientation == 1 * 90.0f || corps[0].Orientation == 3 * 90.0f && corps[2].Orientation == 2 * 90.0f)
+                if(corps[0].Orientation == 0 && corps[2].Orientation == 1 || corps[0].Orientation == 3 && corps[2].Orientation == 2)
                 {
-                    corps[1].Orientation = 3 * 90.0f;
+                    corps[1].Orientation = 3;
                 }
                 /*
                        * *
                        *
                 */
-                else if (corps[0].Orientation == 1 * 90.0f && corps[2].Orientation == 2 * 90.0f || corps[0].Orientation == 0 && corps[2].Orientation == 3 * 90.0f)
+                else if (corps[0].Orientation == 1 && corps[2].Orientation == 2 || corps[0].Orientation == 0 && corps[2].Orientation == 3)
                 {
-                    corps[1].Orientation = 0 * 90.0f;
+                    corps[1].Orientation = 0;
                 }
                 /*
                        * *
                          *
                 */
-                else if (corps[0].Orientation == 2 * 90.0f && corps[2].Orientation == 3 * 90.0f || corps[0].Orientation == 1 * 90.0f && corps[2].Orientation == 0)
+                else if (corps[0].Orientation == 2 && corps[2].Orientation == 3 || corps[0].Orientation == 1 && corps[2].Orientation == 0)
                 {
-                    corps[1].Orientation = 1 * 90.0f;
+                    corps[1].Orientation = 1;
                 }
                 /*
                          *
                        * *
                 */
-                else if (corps[0].Orientation == 3 * 90.0f && corps[2].Orientation == 0 || corps[0].Orientation == 2 * 90.0f && corps[2].Orientation == 1 * 90.0f)
+                else if (corps[0].Orientation == 3 && corps[2].Orientation == 0 || corps[0].Orientation == 2 && corps[2].Orientation == 1)
                 {
-                    corps[1].Orientation = 2 * 90.0f;
+                    corps[1].Orientation = 2;
                 }
             }
         }

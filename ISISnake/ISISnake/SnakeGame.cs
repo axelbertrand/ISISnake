@@ -29,6 +29,7 @@ namespace ISISnake
         KeyboardState keyboardState;
         int orientation = 0;
         bool s = false;
+        Random rnd = new Random();
 
         public SnakeGame()
         {
@@ -47,11 +48,6 @@ namespace ISISnake
         /// </summary>
         protected override void Initialize()
         {
-            serpent.AddSprite(new Sprite("SerpentTete", new Vector2(75, 25)));
-            serpent.AddSprite(new Sprite("SerpentCorps", new Vector2(50, 25)));
-            serpent.AddSprite(new Sprite("SerpentQueue", new Vector2(25, 25)));
-
-            Random rnd = new Random();
             pomme = new Sprite("Pomme", new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f));
 
             base.Initialize();
@@ -124,6 +120,11 @@ namespace ISISnake
             if (elapsedTime >= INTERVALLE)
             {
                 serpent.Update(gameTime, orientation);
+                if(pomme.Position == serpent.Get(0).Position)
+                {
+                    serpent.Add();
+                    pomme.Position = new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f);
+                }
                 elapsedTime = 0;
                 s = false;
             }
