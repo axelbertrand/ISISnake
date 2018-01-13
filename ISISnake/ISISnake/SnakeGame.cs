@@ -22,9 +22,13 @@ namespace ISISnake
         SortedList<string, Texture2D> textures = new SortedList<string, Texture2D>();
         Serpent serpent = new Serpent();
         Sprite pomme;
+        int score = 0;
+        SpriteFont font;
+        bool finPartie = false;
 
         double elapsedTime = 0;
         const float INTERVALLE = 0.5f;
+        float vitesse = 1.0f;
 
         KeyboardState keyboardState;
         int orientation = 0;
@@ -67,6 +71,8 @@ namespace ISISnake
             textures.Add("SerpentVirage",   Content.Load<Texture2D>("serpent_virage"));
             textures.Add("SerpentQueue",    Content.Load<Texture2D>("serpent_queue"));
             textures.Add("Pomme",           Content.Load<Texture2D>("pomme"));
+
+            font = Content.Load<SpriteFont>("arial");
         }
 
         /// <summary>
@@ -90,45 +96,53 @@ namespace ISISnake
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
-
-            if(!s)
+            if(!finPartie)
             {
-                if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
+                elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (!s)
                 {
-                    orientation = 0;
-                    s = true;
+                    if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
+                    {
+                        orientation = 0;
+                        s = true;
+                    }
+                    if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
+                    {
+                        orientation = 1;
+                        s = true;
+                    }
+                    if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
+                    {
+                        orientation = 2;
+                        s = true;
+                    }
+                    if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
+                    {
+                        orientation = 3;
+                        s = true;
+                    }
                 }
-                if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
+
+
+                if (elapsedTime >= INTERVALLE / vitesse)
                 {
-                    orientation = 1;
-                    s = true;
-                }
-                if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
-                {
-                    orientation = 2;
-                    s = true;
-                }
-                if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
-                {
-                    orientation = 3;
-                    s = true;
+                    if (serpent.Update(gameTime, orientation))
+                    {
+                        finPartie = true;
+                    }
+
+                    if (pomme.Position == serpent.Get(0).Position)
+                    {
+                        serpent.Add();
+                        pomme.Position = new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f);
+                        score += 100;
+                        vitesse += 0.25f;
+                    }
+                    elapsedTime = 0;
+                    s = false;
                 }
             }
-            
-
-            if (elapsedTime >= INTERVALLE)
-            {
-                serpent.Update(gameTime, orientation);
-                if(pomme.Position == serpent.Get(0).Position)
-                {
-                    serpent.Add();
-                    pomme.Position = new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f);
-                }
-                elapsedTime = 0;
-                s = false;
-            }
-            
 
             base.Update(gameTime);
         }
@@ -140,10 +154,18 @@ namespace ISISnake
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
+            string scoreStr = "Score : " + score;
 
             spriteBatch.Begin();
+            spriteBatch.DrawString(font, scoreStr, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(scoreStr).X - 10, 20), Color.Black);
             serpent.Draw(spriteBatch, gameTime, textures);
             pomme.Draw(spriteBatch, gameTime, textures);
+
+            if(finPartie)
+            {
+                string message = "Perdu !";
+                spriteBatch.DrawString(font, message, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(message).X, graphics.PreferredBackBufferHeight - font.MeasureString(message).Y) / 2, Color.Black);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);

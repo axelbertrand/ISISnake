@@ -49,7 +49,7 @@ namespace ISISnake
             return corps[index];
         }
 
-        public void Update(GameTime gameTime, int orientation)
+        public bool Update(GameTime gameTime, int orientation)
         {
             // orientation == 0 => droite
             // orientation == 1 => bas
@@ -128,6 +128,16 @@ namespace ISISnake
                     corps[1].Orientation = 2;
                 }
             }
+
+            for(int i = 1; i < corps.Count; i++)
+            {
+                if(corps[i].Position == corps[0].Position)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, SortedList<string, Texture2D> listeTexture)
