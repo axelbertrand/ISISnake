@@ -28,7 +28,9 @@ namespace ISISnake
 
         double elapsedTime = 0;
         const float INTERVALLE = 0.5f;
-        float vitesse = 1.0f;
+        const float VITESSE_INI = 1.5f;
+        const float VITESSE_MAX = 2.5f;
+        float vitesse = VITESSE_INI;
 
         KeyboardState keyboardState;
         int orientation = 0;
@@ -44,6 +46,11 @@ namespace ISISnake
             Content.RootDirectory = "Content";
         }
 
+        public Vector2 RandomGridPosition()
+        {
+            return new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f);
+        }
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -52,7 +59,7 @@ namespace ISISnake
         /// </summary>
         protected override void Initialize()
         {
-            pomme = new Sprite("Pomme", new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f));
+            pomme = new Sprite("Pomme", RandomGridPosition());
 
             base.Initialize();
         }
@@ -96,34 +103,44 @@ namespace ISISnake
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            if(!finPartie)
+            if (!s)
+            {
+                if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
+                {
+                    orientation = 0;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
+                {
+                    orientation = 1;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
+                {
+                    orientation = 2;
+                    s = true;
+                }
+                if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
+                {
+                    orientation = 3;
+                    s = true;
+                }
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Enter) && finPartie)
+            {
+                serpent = new Serpent();
+                pomme.Position = RandomGridPosition();
+                score = 0;
+                vitesse = VITESSE_INI;
+                finPartie = false;
+                orientation = 0;
+                s = false;
+            }
+
+            if (!finPartie)
             {
                 elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (!s)
-                {
-                    if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
-                    {
-                        orientation = 0;
-                        s = true;
-                    }
-                    if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
-                    {
-                        orientation = 1;
-                        s = true;
-                    }
-                    if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
-                    {
-                        orientation = 2;
-                        s = true;
-                    }
-                    if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
-                    {
-                        orientation = 3;
-                        s = true;
-                    }
-                }
-
 
                 if (elapsedTime >= INTERVALLE / vitesse)
                 {
@@ -135,9 +152,19 @@ namespace ISISnake
                     if (pomme.Position == serpent.Get(0).Position)
                     {
                         serpent.Add();
-                        pomme.Position = new Vector2(rnd.Next(graphics.PreferredBackBufferWidth / 25) * 25.0f, rnd.Next(graphics.PreferredBackBufferHeight / 25) * 25.0f);
+                        Vector2 nouvPos;
+                        do
+                        {
+                            nouvPos = RandomGridPosition();
+                        }
+                        while (serpent.EstSurSerpent(nouvPos));
+
+                        pomme.Position = nouvPos;
                         score += 100;
-                        vitesse += 0.25f;
+                        if(vitesse < VITESSE_MAX)
+                        {
+                            vitesse += 0.25f;
+                        }
                     }
                     elapsedTime = 0;
                     s = false;
@@ -163,7 +190,7 @@ namespace ISISnake
 
             if(finPartie)
             {
-                string message = "Perdu !";
+                string message = "Perdu ! (Appuyer sur Entrée pour recommencer)";
                 spriteBatch.DrawString(font, message, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(message).X, graphics.PreferredBackBufferHeight - font.MeasureString(message).Y) / 2, Color.Black);
             }
             spriteBatch.End();

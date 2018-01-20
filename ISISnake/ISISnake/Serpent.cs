@@ -49,6 +49,24 @@ namespace ISISnake
             return corps[index];
         }
 
+        public bool EstSurSerpent(Vector2 pos, int debut = 0)
+        {
+            return EstSurSerpent(pos, debut, corps.Count);
+        }
+
+        public bool EstSurSerpent(Vector2 pos, int debut, int fin)
+        {
+            for(int i = debut; i < fin; i++)
+            {
+                if(corps[i].Position == pos)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool Update(GameTime gameTime, int orientation)
         {
             // orientation == 0 => droite
@@ -88,7 +106,7 @@ namespace ISISnake
             corps.RemoveAt(corps.Count - 1);
 
             // Modification de la texture du corps
-            if (corps[0].Orientation == corps[2].Orientation)
+            if (corps[1].Orientation == orientation)
             {
                 corps[1].TextureName = "SerpentCorps";
             }
@@ -129,15 +147,7 @@ namespace ISISnake
                 }
             }
 
-            for(int i = 1; i < corps.Count; i++)
-            {
-                if(corps[i].Position == corps[0].Position)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return EstSurSerpent(corps[0].Position, 1);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, SortedList<string, Texture2D> listeTexture)
