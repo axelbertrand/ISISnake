@@ -67,7 +67,12 @@ namespace ISISnake
             return false;
         }
 
-        public bool Update(GameTime gameTime, int orientation)
+        public bool EstHorsEcran(Vector2 tailleEcran)
+        {
+            return corps[0].Position.X >= tailleEcran.X || corps[0].Position.Y >= tailleEcran.Y || corps[0].Position.X < 0 || corps[0].Position.Y < 0;
+        }
+
+        public void Update(GameTime gameTime, int orientation)
         {
             // orientation == 0 => droite
             // orientation == 1 => bas
@@ -146,8 +151,6 @@ namespace ISISnake
                     corps[1].Orientation = 2;
                 }
             }
-
-            return EstSurSerpent(corps[0].Position, 1);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime, SortedList<string, Texture2D> listeTexture)

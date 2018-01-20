@@ -144,7 +144,8 @@ namespace ISISnake
 
                 if (elapsedTime >= INTERVALLE / vitesse)
                 {
-                    if (serpent.Update(gameTime, orientation))
+                    serpent.Update(gameTime, orientation);
+                    if (serpent.EstSurSerpent(serpent.Get(0).Position, 1) || serpent.EstHorsEcran(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight)))
                     {
                         finPartie = true;
                     }
