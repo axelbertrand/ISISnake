@@ -20,6 +20,9 @@ namespace ISISnake
         SpriteBatch spriteBatch;
 
         SortedList<string, Texture2D> textures = new SortedList<string, Texture2D>();
+        SoundEffect pickupSound;
+        SoundEffect gameoverSound;
+        Song music;
         Serpent serpent = new Serpent();
         Sprite pomme;
         int score = 0;
@@ -60,6 +63,7 @@ namespace ISISnake
         protected override void Initialize()
         {
             pomme = new Sprite("Pomme", RandomGridPosition());
+            MediaPlayer.IsRepeating = true;
 
             base.Initialize();
         }
@@ -78,6 +82,13 @@ namespace ISISnake
             textures.Add("SerpentVirage",   Content.Load<Texture2D>("serpent_virage"));
             textures.Add("SerpentQueue",    Content.Load<Texture2D>("serpent_queue"));
             textures.Add("Pomme",           Content.Load<Texture2D>("pomme"));
+
+            pickupSound = Content.Load<SoundEffect>("pickup_sound");
+            gameoverSound = Content.Load<SoundEffect>("gameover_sound");
+
+            music = Content.Load<Song>("music");
+
+            MediaPlayer.Play(music);
 
             font = Content.Load<SpriteFont>("arial");
         }
@@ -136,6 +147,7 @@ namespace ISISnake
                 finPartie = false;
                 orientation = 0;
                 s = false;
+                MediaPlayer.Play(music);
             }
 
             if (!finPartie)
@@ -147,11 +159,16 @@ namespace ISISnake
                     serpent.Update(gameTime, orientation);
                     if (serpent.EstSurSerpent(serpent.Get(0).Position, 1) || serpent.EstHorsEcran(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight)))
                     {
+                        gameoverSound.Play();
+                        MediaPlayer.Stop();
                         finPartie = true;
                     }
 
                     if (pomme.Position == serpent.Get(0).Position)
                     {
+                        SoundEffectInstance pickupInstance = pickupSound.CreateInstance();
+                        pickupInstance.Volume = 0.1f;
+                        pickupInstance.Play();
                         serpent.Add();
                         Vector2 nouvPos;
                         do
