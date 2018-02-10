@@ -106,7 +106,73 @@ namespace ISISnake
             corps.Insert(0, nouvTete);
 
             // Suppression de la queue
-            corps[corps.Count - 2].Orientation = corps[corps.Count - 3].Orientation;
+            if(corps[corps.Count - 2].TextureName.Equals("SerpentCorps"))
+            {
+                corps[corps.Count - 2].Orientation = corps[corps.Count - 3].Orientation;
+            }
+            else
+            {
+                /*
+                       *
+                       * *
+                */
+                if (corps[corps.Count - 3].Orientation == 3)
+                {
+                    if(corps[corps.Count - 4].Orientation == 3)
+                    {
+                        corps[corps.Count - 2].Orientation = 2;
+                    }
+                    else if (corps[corps.Count - 4].Orientation == 0)
+                    {
+                        corps[corps.Count - 2].Orientation = 1;
+                    }   
+                }
+                /*
+                       * *
+                       *
+                */
+                else if (corps[corps.Count - 3].Orientation == 0)
+                {
+                    if (corps[corps.Count - 4].Orientation == 0)
+                    {
+                        corps[corps.Count - 2].Orientation = 3;
+                    }
+                    else if (corps[corps.Count - 4].Orientation == 1)
+                    {
+                        corps[corps.Count - 2].Orientation = 3;
+                    }
+                }
+                /*
+                       * *
+                         *
+                */
+                else if (corps[corps.Count - 3].Orientation == 1)
+                {
+                    if (corps[corps.Count - 4].Orientation == 1)
+                    {
+                        corps[corps.Count - 2].Orientation = 0;
+                    }
+                    else if (corps[corps.Count - 4].Orientation == 2)
+                    {
+                        corps[corps.Count - 2].Orientation = 3;
+                    }
+                }
+                /*
+                         *
+                       * *
+                */
+                else if (corps[corps.Count - 3].Orientation == 2)
+                {
+                    if (corps[corps.Count - 4].Orientation == 3)
+                    {
+                        corps[corps.Count - 2].Orientation = 0;
+                    }
+                    else if (corps[corps.Count - 4].Orientation == 2)
+                    {
+                        corps[corps.Count - 2].Orientation = 1;
+                    }
+                }
+            }
             corps[corps.Count - 2].TextureName = "SerpentQueue";
             corps.RemoveAt(corps.Count - 1);
 

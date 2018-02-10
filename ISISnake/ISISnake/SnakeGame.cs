@@ -27,6 +27,7 @@ namespace ISISnake
         Sprite pomme;
         int score = 0;
         SpriteFont font;
+        bool pause = false;
         bool finPartie = false;
 
         double elapsedTime = 0;
@@ -36,6 +37,7 @@ namespace ISISnake
         float vitesse = VITESSE_INI;
 
         KeyboardState keyboardState;
+        KeyboardState oldKeyboardState;
         int orientation = 0;
         bool s = false;
         Random rnd = new Random();
@@ -138,6 +140,15 @@ namespace ISISnake
                 }
             }
 
+            if (keyboardState.IsKeyDown(Keys.Escape) && oldKeyboardState.IsKeyUp(Keys.Escape))
+            {
+                pause = !pause;
+                if (pause)
+                    MediaPlayer.Pause();
+                else
+                    MediaPlayer.Resume();
+            }
+
             if (keyboardState.IsKeyDown(Keys.Enter) && finPartie)
             {
                 serpent = new Serpent();
@@ -150,7 +161,7 @@ namespace ISISnake
                 MediaPlayer.Play(music);
             }
 
-            if (!finPartie)
+            if (!finPartie && !pause)
             {
                 elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -189,6 +200,8 @@ namespace ISISnake
                 }
             }
 
+            oldKeyboardState = keyboardState;
+
             base.Update(gameTime);
         }
 
@@ -205,8 +218,12 @@ namespace ISISnake
             spriteBatch.DrawString(font, scoreStr, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(scoreStr).X - 10, 20), Color.Black);
             serpent.Draw(spriteBatch, gameTime, textures);
             pomme.Draw(spriteBatch, gameTime, textures);
-
-            if(finPartie)
+            if(pause)
+            {
+                string message = "PAUSE";
+                spriteBatch.DrawString(font, message, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(message).X, graphics.PreferredBackBufferHeight - font.MeasureString(message).Y) / 2, Color.Black);
+            }
+            if (finPartie)
             {
                 string message = "Perdu ! (Appuyer sur Entrée pour recommencer)";
                 spriteBatch.DrawString(font, message, new Vector2(graphics.PreferredBackBufferWidth - font.MeasureString(message).X, graphics.PreferredBackBufferHeight - font.MeasureString(message).Y) / 2, Color.Black);
