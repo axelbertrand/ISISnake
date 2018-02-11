@@ -49,6 +49,11 @@ namespace ISISnake
             return corps[index];
         }
 
+        public int GetOrientationTete()
+        {
+            return corps[0].Orientation;
+        }
+
         public bool EstSurSerpent(Vector2 pos, int debut = 0)
         {
             return EstSurSerpent(pos, debut, corps.Count);
@@ -74,10 +79,20 @@ namespace ISISnake
 
         public void Update(GameTime gameTime, int orientation)
         {
-            // orientation == 0 => droite
-            // orientation == 1 => bas
-            // orientation == 2 => gauche
-            // orientation == 3 => haut
+            /*
+            orientation == 0 => droite
+                             => * *
+                                *
+            orientation == 1 => bas
+                             => * *
+                                  *
+            orientation == 2 => gauche
+                             =>   *
+                                * *
+            orientation == 3 => haut
+                             => *
+                                * *
+            */
             Vector2 direction;
             switch(orientation)
             {
@@ -98,81 +113,21 @@ namespace ISISnake
                     break;
             }
 
-            Vector2 nouvPosTete = corps[0].Position + direction;
-
             // Ajout d'une nouvelle tête
             Sprite nouvTete = new Sprite("SerpentTete", corps[0].Position + direction);
             nouvTete.Orientation = orientation;
             corps.Insert(0, nouvTete);
 
             // Suppression de la queue
-            if(corps[corps.Count - 2].TextureName.Equals("SerpentCorps"))
-            {
-                corps[corps.Count - 2].Orientation = corps[corps.Count - 3].Orientation;
-            }
-            else
-            {
-                /*
-                       *
-                       * *
-                */
-                if (corps[corps.Count - 3].Orientation == 3)
-                {
-                    if(corps[corps.Count - 4].Orientation == 3)
-                    {
-                        corps[corps.Count - 2].Orientation = 2;
-                    }
-                    else if (corps[corps.Count - 4].Orientation == 0)
-                    {
-                        corps[corps.Count - 2].Orientation = 1;
-                    }   
-                }
-                /*
-                       * *
-                       *
-                */
-                else if (corps[corps.Count - 3].Orientation == 0)
-                {
-                    if (corps[corps.Count - 4].Orientation == 0)
-                    {
-                        corps[corps.Count - 2].Orientation = 3;
-                    }
-                    else if (corps[corps.Count - 4].Orientation == 1)
-                    {
-                        corps[corps.Count - 2].Orientation = 3;
-                    }
-                }
-                /*
-                       * *
-                         *
-                */
-                else if (corps[corps.Count - 3].Orientation == 1)
-                {
-                    if (corps[corps.Count - 4].Orientation == 1)
-                    {
-                        corps[corps.Count - 2].Orientation = 0;
-                    }
-                    else if (corps[corps.Count - 4].Orientation == 2)
-                    {
-                        corps[corps.Count - 2].Orientation = 3;
-                    }
-                }
-                /*
-                         *
-                       * *
-                */
-                else if (corps[corps.Count - 3].Orientation == 2)
-                {
-                    if (corps[corps.Count - 4].Orientation == 3)
-                    {
-                        corps[corps.Count - 2].Orientation = 0;
-                    }
-                    else if (corps[corps.Count - 4].Orientation == 2)
-                    {
-                        corps[corps.Count - 2].Orientation = 1;
-                    }
-                }
-            }
+            if((corps[corps.Count - 2].Position.X - corps[corps.Count - 3].Position.X) < 0)
+                corps[corps.Count - 2].Orientation = 0;
+            else if((corps[corps.Count - 2].Position.X - corps[corps.Count - 3].Position.X) > 0)
+                corps[corps.Count - 2].Orientation = 2;
+            else if ((corps[corps.Count - 2].Position.Y - corps[corps.Count - 3].Position.Y) < 0)
+                corps[corps.Count - 2].Orientation = 1;
+            else if ((corps[corps.Count - 2].Position.Y - corps[corps.Count - 3].Position.Y) > 0)
+                corps[corps.Count - 2].Orientation = 3;
+
             corps[corps.Count - 2].TextureName = "SerpentQueue";
             corps.RemoveAt(corps.Count - 1);
 
@@ -184,37 +139,45 @@ namespace ISISnake
             else
             {
                 corps[1].TextureName = "SerpentVirage";
-                /*
-                       *
-                       * *
-                */
-                if(corps[0].Orientation == 0 && corps[2].Orientation == 1 || corps[0].Orientation == 3 && corps[2].Orientation == 2)
+                
+                if (corps[0].Position.X == corps[1].Position.X)
                 {
-                    corps[1].Orientation = 3;
+
+                    if ((corps[2].Position.X - corps[0].Position.X < 0) && (corps[2].Position.Y - corps[0].Position.Y < 0))
+                    {
+                        corps[1].Orientation = 1;
+                    }
+                    else if ((corps[2].Position.X - corps[0].Position.X < 0) && (corps[2].Position.Y - corps[0].Position.Y > 0))
+                    {
+                        corps[1].Orientation = 2;
+                    }
+                    else if ((corps[2].Position.X - corps[0].Position.X > 0) && (corps[2].Position.Y - corps[0].Position.Y < 0))
+                    {
+                        corps[1].Orientation = 0;
+                    }
+                    else if ((corps[2].Position.X - corps[0].Position.X > 0) && (corps[2].Position.Y - corps[0].Position.Y > 0))
+                    {
+                        corps[1].Orientation = 3;
+                    }
                 }
-                /*
-                       * *
-                       *
-                */
-                else if (corps[0].Orientation == 1 && corps[2].Orientation == 2 || corps[0].Orientation == 0 && corps[2].Orientation == 3)
+                else if (corps[0].Position.Y == corps[1].Position.Y)
                 {
-                    corps[1].Orientation = 0;
-                }
-                /*
-                       * *
-                         *
-                */
-                else if (corps[0].Orientation == 2 && corps[2].Orientation == 3 || corps[0].Orientation == 1 && corps[2].Orientation == 0)
-                {
-                    corps[1].Orientation = 1;
-                }
-                /*
-                         *
-                       * *
-                */
-                else if (corps[0].Orientation == 3 && corps[2].Orientation == 0 || corps[0].Orientation == 2 && corps[2].Orientation == 1)
-                {
-                    corps[1].Orientation = 2;
+                    if ((corps[2].Position.Y - corps[0].Position.Y < 0) && (corps[2].Position.X - corps[0].Position.X < 0))
+                    {
+                        corps[1].Orientation = 3;
+                    }
+                    else if ((corps[2].Position.Y - corps[0].Position.Y < 0) && (corps[2].Position.X - corps[0].Position.X > 0))
+                    {
+                        corps[1].Orientation = 2;
+                    }
+                    else if ((corps[2].Position.Y - corps[0].Position.Y > 0) && (corps[2].Position.X - corps[0].Position.X < 0))
+                    {
+                        corps[1].Orientation = 0;
+                    }
+                    else if ((corps[2].Position.Y - corps[0].Position.Y > 0) && (corps[2].Position.X - corps[0].Position.X > 0))
+                    {
+                        corps[1].Orientation = 1;
+                    }
                 }
             }
         }

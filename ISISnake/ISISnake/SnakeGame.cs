@@ -39,7 +39,6 @@ namespace ISISnake
         KeyboardState keyboardState;
         KeyboardState oldKeyboardState;
         int orientation = 0;
-        bool s = false;
         Random rnd = new Random();
 
         public SnakeGame()
@@ -116,28 +115,21 @@ namespace ISISnake
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            if (!s)
+            if (keyboardState.IsKeyDown(Keys.Right) && serpent.GetOrientationTete() != 2)
             {
-                if (keyboardState.IsKeyDown(Keys.Right) && orientation != 2)
-                {
-                    orientation = 0;
-                    s = true;
-                }
-                if (keyboardState.IsKeyDown(Keys.Down) && orientation != 3)
-                {
-                    orientation = 1;
-                    s = true;
-                }
-                if (keyboardState.IsKeyDown(Keys.Left) && orientation != 0)
-                {
-                    orientation = 2;
-                    s = true;
-                }
-                if (keyboardState.IsKeyDown(Keys.Up) && orientation != 1)
-                {
-                    orientation = 3;
-                    s = true;
-                }
+                orientation = 0;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down) && serpent.GetOrientationTete() != 3)
+            {
+                orientation = 1;
+            }
+            if (keyboardState.IsKeyDown(Keys.Left) && serpent.GetOrientationTete() != 0)
+            {
+                orientation = 2;
+            }
+            if (keyboardState.IsKeyDown(Keys.Up) && serpent.GetOrientationTete() != 1)
+            {
+                orientation = 3;
             }
 
             if (keyboardState.IsKeyDown(Keys.Escape) && oldKeyboardState.IsKeyUp(Keys.Escape))
@@ -157,7 +149,6 @@ namespace ISISnake
                 vitesse = VITESSE_INI;
                 finPartie = false;
                 orientation = 0;
-                s = false;
                 MediaPlayer.Play(music);
             }
 
@@ -196,7 +187,6 @@ namespace ISISnake
                         }
                     }
                     elapsedTime = 0;
-                    s = false;
                 }
             }
 
